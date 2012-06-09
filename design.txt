@@ -1,0 +1,19 @@
+Board
+    grid[Coordinate.val] = Tile
+
+    add
+        for n in neighbors:
+	    combine_tiles(new, old, side)
+
+    combine_tiles(new, old, side):
+        new_sides
+	old_sides
+
+	for i in range(3):
+	    combine(new_sides[i], old_sides[i])
+    
+Tile
+    secs[(x,y)] = [Castle, Road, Farm]
+
+
+    
