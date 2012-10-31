@@ -232,12 +232,12 @@ class Board:
         roads = set([m.model for m in models if m.marker == road])
 
         print 'CASTLES:',len(castles)
-        # for model in castles:
-        #     model.print_model()
+        for model in castles:
+            model.print_model()
         print 'ROADS:',len(roads)
-        # for model in roads:
-        #     model.print_model()
+        for model in roads:
+            model.print_model()
         print 'FARMS:',len(farms)
-        # for model in farms:
-        #     model.print_model()
+        for model in farms:
+            model.print_model()
 

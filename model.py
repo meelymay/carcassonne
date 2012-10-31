@@ -98,8 +98,8 @@ class Model:
 
     def print_model(self):
         print self
-        # for sec in self.secs:
-        #     sec.print_section()
+        for sec in self.secs:
+            sec.print_section()
     
 class Castle(Model):
     
@@ -206,8 +206,10 @@ class Farm(Model):
     def score(self):
         castles = set([])
         for sec in self.secs:
-            if sec.marker == castle and sec.model.complete_score() > 0:
-                castles.add(sec.model)
+            for nb_pos in neighbor_secs[sec.position]:
+                nb_sec = sec.tile.secs[nb_pos]
+                if nb_sec.marker == castle and nb_sec.model.complete_score() > 0:
+                    castles.add(sec.model)
         return len(castles)*3
 
     def displayable(self):

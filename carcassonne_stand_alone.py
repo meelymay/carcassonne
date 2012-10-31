@@ -1,4 +1,4 @@
-import sys
+import sys, argparse
 from board import *
 from coordinate import *
 from protocol import *
@@ -68,6 +68,58 @@ class Game:
         self.board = Board()
         self.players = [Player(names[p]) for p in range(num_players)]
     
+    def test(self, test_name):
+        if test_name == 'farm_none':
+            self.test_farm_none()
+        elif test_name == 'farm_castle1':
+            self.test_farm_castle1()
+        else:
+            print 'test name %s not recognized' % test_name
+        
+    def test_farm_none(self):    
+        road_bend_1 = road_bend.copy()
+        road_bend_1.rotate()
+        self.board.add(road_bend_1, Coordinate(1,0))        
+        road_bend_1.add_meeple(right, self.players[0].get_meeple())
+        for model in self.board.get_models():
+            model.return_meeples()
+        
+        castle_end_1 = castle_end.copy()
+        castle_end_1.rotate_n(2)
+        self.board.add(castle_end_1, Coordinate(0,1))
+        castle_end_1.add_meeple(bottom, self.players[1].get_meeple())
+        for model in self.board.get_models():
+            model.return_meeples()
+
+        sb = SerialGrid(self.board, self.players[0].name)
+        sb.print_grid()
+      
+        #pdb.set_trace()
+        self.calculate_scores()   
+        #self.board.print_models()
+
+    def test_farm_castle1(self):
+        road_bend_1 = road_bend.copy()
+        road_bend_1.rotate()
+        self.board.add(road_bend_1, Coordinate(1,0))        
+        road_bend_1.add_meeple(tleft, self.players[0].get_meeple())
+        for model in self.board.get_models():
+            model.return_meeples()
+        
+        castle_end_1 = castle_end.copy()
+        castle_end_1.rotate_n(2)
+        self.board.add(castle_end_1, Coordinate(0,1))
+        castle_end_1.add_meeple(bottom, self.players[1].get_meeple())
+        for model in self.board.get_models():
+            model.return_meeples()
+
+        sb = SerialGrid(self.board, self.players[0].name)
+        sb.print_grid()
+      
+        #pdb.set_trace()
+        self.calculate_scores()   
+        #self.board.print_models()
+ 
     def play(self):
         game_over = False
         game_len = 72
@@ -178,5 +230,14 @@ class Game:
         
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Carcassonne!')
+    parser.add_argument('--test', type=str, default='play', help='test name')
+    args = parser.parse_args()    
+
     g = Game(2, ['Amelia','Andy'])
-    g.play()
+    
+    if args.test == 'play':
+        g.play()
+    else:
+        g.test(args.test)
+

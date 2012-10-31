@@ -1,26 +1,45 @@
 from random import *
 from tiles import *
 
-start_tile = Tile('start_tile', road, castle, road, farm)
-cloister_plain = Tile('cloister_plain', farm, farm, farm, farm)
-cloister_road = Tile('cloister_road', farm, farm, farm, road)
-castle4 = Tile('castle4', castle, castle, castle, castle, connected=True)
-castle3 = Tile('castle3', castle, castle, castle, farm, connected=True)
-castle3_road = Tile('castle3_road', castle, castle, castle, road, connected=True)
-castle2 = Tile('castle2', castle, castle, farm, farm, connected=True)
-castle2_road = Tile('castle2_road', castle, castle, road, road, connected=True)
-castle_farm2 = Tile('castle_farm2', castle, farm, castle, farm, connected=True)
-farm_castle2 = Tile('farm_castle2', castle, farm, castle, farm)
-butt = Tile('butt', castle, castle, farm, farm)
-castle_end = Tile('castle_end', castle, farm, farm, farm)
-castle_end_road_l = Tile('castle_end_road_l', castle, farm, road, road)
-castle_end_road_r = Tile('castle_end_road_r', castle, road, road, farm)
-castle_end_road3 = Tile('castle_end_road3', castle, road, road, road)
-castle_end_road = Tile('castle_end_road', castle, road, farm, road)
-road_tile = Tile('road', road, farm, road, farm)
-road_bend = Tile('road_bend', road, farm, farm, road)
-road3 = Tile('road3', road, farm, road, road)
-road4 = Tile('road4', road, road, road, road)
+start_tile = Tile('start_tile', [(castle, [top]), (road,[left,right]), (road,[center]), (farm,[tleft,tright]), (farm,full_side[bottom])])
+
+cloister_plain = Tile('cloister_plain', [(cloister,[center]), (farm,all_out_secs)])
+
+cloister_road = Tile('cloister_road', [(cloister,[center]), (farm,[left,tleft,top,tright,right,bright,bleft]), (road,[bottom])])
+
+castle4 = Tile('castle4', [(castle,sides), (castle,[center]), (farm,[tleft]), (farm,[tright]), (farm,[bright]), (farm,[bleft])])
+
+castle3 = Tile('castle3', [(castle,[left,top,right]), (castle,[center]), (farm,[tleft]), (farm,[tright]), (farm,full_side[bottom])])
+
+castle3_road = Tile('castle3_road', [(castle,[left,top,right]), (castle,[center]), (farm,[tleft]), (farm,[tright]), (farm,[bright]), (farm,[bleft]), (road,[bottom])])
+
+castle2 = Tile('castle2', [(farm,[tright,right,bright,bottom,bleft]), (castle,[center]), (castle,[left,top]), (farm,[tleft])])
+
+castle2_road = Tile('castle2_road', [(farm,[tright,bleft]), (farm,[center]), (farm,[bright]), (castle,[left,top]), (farm,[tleft]), (road,[right,bottom])])
+
+castle_farm2 = Tile('castle_farm2', [(castle,[left,right]), (castle,[center]), (farm,full_side[top]), (farm,full_side[bottom])])
+
+farm_castle2 = Tile('farm_castle2', [(farm,[left,tleft,tright,right,bright,bleft]), (farm,[center]), (castle,[top]), (castle,[bottom])])
+
+butt = Tile('butt', [(farm,[tleft,tright,right,bright,bottom,bleft]), (farm,[center]), (castle,[left]), (castle,[top])])
+
+castle_end = Tile('castle_end', [(farm,[left,tleft,tright,right,bright,bottom,bleft]), (farm,[center]), (castle,[top])])
+
+castle_end_road_l = Tile('castle_end_road_l', [(farm,[tleft,tright,right,bright]), (farm,[center]), (castle,[top]), (road,[left,bottom]), (farm,[bleft])])
+
+castle_end_road_r = Tile('castle_end_road_r',[(farm,[left,tleft,tright,bleft]), (farm,[center]), (castle,[top]), (road,[right,bottom]), (farm,[bright])])
+
+castle_end_road3 = Tile('castle_end_road3', [(farm,[center]), (farm,[tleft,tright]), (farm,[bright]), (farm,[bleft]), (castle,[top]), (road,[left]), (road,[right]), (road,[bottom])])
+
+castle_end_road = Tile('castle_end_road', [(castle, [top]), (road,[left,right]), (road,[center]), (farm,[tleft,tright]), (farm,full_side[bottom])])
+
+road_tile = Tile('road', [(road,[top,bottom]), (road,[center]), (farm,full_side[left]), (farm,full_side[right])])
+
+road_bend = Tile('road_bend', [(farm,[tleft,top,tright,right,bright]), (farm,[center]), (farm,[bleft]), (road,[left,bottom])])
+
+road3 = Tile('road3', [(farm,[center]), (farm,full_side[top]), (farm,[bright]), (farm,[bleft]), (road,[left]), (road,[right]), (road,[bottom])])
+
+road4 = Tile('road4', [(farm,[center]), (farm,[tleft]), (farm,[tright]), (farm,[bright]), (farm,[bleft]), (road,[left]), (road,[top]), (road,[right]), (road,[bottom])])
 
 tile_types = [cloister_plain, cloister_road, castle4, castle3, castle3_road, castle2, castle2_road, castle_farm2, farm_castle2, butt, castle_end, castle_end_road_l, castle_end_road_r, castle_end_road3, castle_end_road, road_tile, road_bend, road3, road4]
 tile_names = {}
@@ -67,3 +86,4 @@ class Deck:
         tile = self.pile.pop(i)
         self.tiles_left[tile.name] -= 1
         return tile
+

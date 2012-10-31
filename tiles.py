@@ -1,6 +1,7 @@
 from coordinate import *
 from model import *
 import sys
+import pdb
 
 class Section:
     def __init__(self, tile, position, marker, end=False):
@@ -36,7 +37,7 @@ class Section:
     def get_matches(self):
         matches = []
 
-        t = Tile('dummy',farm,farm,farm,farm)
+        t = Tile('dummy', [(farm,[center]), (farm, all_out_secs)])
         for horizontal in [True, False]:
             pos = opp_pos(self.position, horizontal)
             if pos != self.position:
@@ -69,71 +70,32 @@ class Section:
 
 class Tile:
 
-    def __init__(self, name, l, t, r, b, connected=False):
+    def __init__(self, name, sec_clusters):
         self.name = name
-        self.connected = connected
+        self.sec_clusters = sec_clusters
+        self.init_tile()
 
+    def init_tile(self):    
         self.secs = {}
-        # setting top, bottom, left, right
-        self.secs[left] = Section(self, left, l)
-        self.secs[top] = Section(self, top, t)
-        self.secs[right] = Section(self, right, r)
-        self.secs[bottom] = Section(self, bottom, b)
+        # setting sections
+        for (sec_type,sec_coords) in self.sec_clusters:
+            for sec_coord in sec_coords:
+                self.secs[sec_coord] = Section(self, sec_coord, sec_type)
 
         # make roads end
         roads = [self.secs[s] for s in self.secs if self.secs[s].marker == road]
         if len(roads) != 2 and len(roads) > 0:
             map(Section.make_end, roads)
 
-        # setting corners
-        for pos in corners:
-            self.secs[pos] = Section(self, pos, farm)
-
-        # set center
-        self.secs[center] = Section(self, center, farm)
-        if self.connected:
-            self.secs[center] = Section(self, center, castle)
-        if 'cloister' in self.name:
-            self.secs[center] = Section(self, center, cloister)
-        if len(roads) == 2:
-            self.secs[center] = Section(self, center, road)
-
         # linking to model
         self.model = {}
         for sec in all_secs:
             self.secs[sec].set_model(create_model(self.secs[sec]))
         self.connect_model()
-
+        
     def connect_model(self):
-
-        # connect casltes
-        if self.connected:
-            sections = [self.secs[s] for s in sides if self.secs[s].marker == castle]
-            self.connect_sections(sections)
-
-        # connect roads
-        road_secs = [self.secs[s] for s in sides if self.secs[s].marker == road]
-        if len(road_secs) == 2:
-            self.connect_sections(road_secs)
-
-        # connect farms
-        for side in sides:
-            # unify sides
-            if self.secs[side].marker == farm:
-                farm_side = [self.secs[s] for s in full_side[side]]
-                self.connect_sections(farm_side)
-        # adjacent sides
-        prev_side = sides[-1]
-        for side in sides:
-            if self.secs[prev_side].marker == farm and \
-                    self.secs[side].marker == farm:
-                self.connect_sections([self.secs[prev_side], 
-                                       self.secs[side]])
-            prev_side = side
-        # farm_castle2 exception
-        if self.name == 'farm_castle2':
-            self.connect_sections(
-                [self.secs[s] for s in sides if self.secs[s].marker == farm])
+        for (sec_type, sec_coords) in self.sec_clusters:
+            self.connect_sections([self.secs[s] for s in sec_coords])
 
     def connect_sections(self, sections):
         mod = None
@@ -171,12 +133,11 @@ class Tile:
             #self.secs[sec].model.activate()
 
     def copy(self):
-        return Tile(self.name, 
-                    self.secs[left].marker, 
-                    self.secs[top].marker, 
-                    self.secs[right].marker,
-                    self.secs[bottom].marker,
-                    self.connected)
+        sec_clusters_copy = []
+        for (sec_type, sec_coords) in self.sec_clusters:
+            sec_coords_copy = [tuple(c) for c in sec_coords]
+            sec_clusters_copy.append((sec_type, sec_coords_copy)) 
+        return Tile(self.name, sec_clusters_copy)  
 
     def rotate_n(self, n):
         for i in range(n):
@@ -186,15 +147,13 @@ class Tile:
         self.rotate(3);
 
     def rotate(self):
-        for i in range(6):
-            prev_sec = all_out_secs[0]
-            tmp = self.secs[prev_sec]
-            for sec in all_out_secs[1:]:
-                self.secs[prev_sec] = self.secs[sec]
-                self.secs[prev_sec].position = prev_sec
-                prev_sec = sec
-            self.secs[prev_sec] = tmp
-            self.secs[prev_sec].position = prev_sec
+        sec_clusters_copy = []
+        for (sec_type, sec_coords) in self.sec_clusters:
+            sec_coords_copy = [tuple(rotated_secs[c]) for c in sec_coords]
+            sec_clusters_copy.append((sec_type, sec_coords_copy)) 
+        
+        self.sec_clusters = sec_clusters_copy
+        self.init_tile()
 
     def display(self):
         d = self.displayable()
@@ -219,7 +178,7 @@ class Tile:
         return grid
 
     def displayable(self):
-        if self.connected:
+        if self.secs[(0,0)].marker == castle:
             center = ' '+castle+' '
         else:
             center = ' . '

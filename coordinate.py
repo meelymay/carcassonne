@@ -25,6 +25,10 @@ full_side[left] = [bleft, left, tleft]
 all_out_secs = [left, tleft, top, tright, right, bright, bottom, bleft]
 all_secs = all_out_secs+[center]
 
+rotated_secs = {center:center, left:top, tleft:tright, top:right, tright:bright, right:bottom, bright:bleft, bottom:left, bleft:tleft}
+
+neighbor_secs = {center:[left,top,right,bottom], left:[bleft,tleft], tleft:[left,top], top:[tleft,tright], tright:[top,right], right:[tright,bright], bright:[right,bottom], bottom:[bright,bleft], bleft:[bottom,left]} 
+
 class Grid:
     grid = None
     def __init__(self, my_grid):
@@ -56,3 +60,4 @@ class Coordinate:
 
     def neighbor(self, pos):
         return Coordinate(self.x+pos[0], self.y+pos[1])
+
