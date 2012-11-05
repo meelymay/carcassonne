@@ -6,8 +6,8 @@ class CarcassonneClient:
     
     def __init__(self, name):
         self.name = name
-        #self.conn = httplib.HTTPConnection('yeast.csail.mit.edu:2222')
-        self.conn = httplib.HTTPConnection('localhost:2222')
+        self.conn = httplib.HTTPConnection('chili.csail.mit.edu:2222')
+        #self.conn = httplib.HTTPConnection('localhost:2222')
         header = {}
         header['content-type'] = "join"
 

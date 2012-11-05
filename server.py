@@ -2,7 +2,10 @@ import BaseHTTPServer
 import time
 from carcassonne import *
 
-HOST_NAME = 'localhost'
+#HOST_NAME = 'localhost'
+#PORT_NUMBER = 2222
+
+HOST_NAME = 'chili.csail.mit.edu'
 PORT_NUMBER = 2222
 
 class CarcassonneServer(BaseHTTPServer.BaseHTTPRequestHandler):
