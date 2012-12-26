@@ -73,6 +73,8 @@ class Game:
             self.test_farm_none()
         elif test_name == 'farm_castle1':
             self.test_farm_castle1()
+        elif test_name == 'road_tile':
+            self.test_road_tile()
         else:
             print 'test name %s not recognized' % test_name
         
@@ -113,12 +115,45 @@ class Game:
         for model in self.board.get_models():
             model.return_meeples()
 
+
         sb = SerialGrid(self.board, self.players[0].name)
         sb.print_grid()
       
         #pdb.set_trace()
         self.calculate_scores()   
         #self.board.print_models()
+
+  
+    def test_road_tile(self):
+        road4_a = road4.copy()
+        self.board.add(road4_a, Coordinate(1,0))
+        road4_a.add_meeple(left, self.players[0].get_meeple())
+
+        for model in self.board.get_models():
+            model.return_meeples()
+
+        road4_b = road4.copy()
+        self.board.add(road4_b, Coordinate(-1,0))
+#        road4_b.add_meeple(left, self.players[1].get_meeple())
+
+        for model in self.board.get_models():
+            model.return_meeples()
+
+        road4_c = road4.copy()
+        self.board.add(road4_c, Coordinate(2,0))
+
+        for model in self.board.get_models():
+            model.return_meeples()
+
+       # self.board.print_models()
+        
+        sb = SerialGrid(self.board, self.players[0].name)
+        sb.print_grid()
+      
+        #pdb.set_trace()
+        self.calculate_scores()   
+        #self.board.print_models()
+
  
     def play(self):
         game_over = False

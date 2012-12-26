@@ -84,7 +84,7 @@ class Tile:
 
         # make roads end
         roads = [self.secs[s] for s in self.secs if self.secs[s].marker == road]
-        if len(roads) != 2 and len(roads) > 0:
+        if len(roads) != 2 and len(roads) > 0 and not (self.name == 'start_tile' or self.name == 'road_tile'):
             map(Section.make_end, roads)
 
         # linking to model
