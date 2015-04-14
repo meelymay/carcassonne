@@ -1,72 +1,7 @@
-from coordinate import *
+from section import *
 from model import *
 import sys
 import pdb
-
-class Section:
-    def __init__(self, tile, position, marker, end=False):
-        self.tile = tile
-        self.position = position
-        self.marker = marker
-        self.end = end
-        self.model = None
-        self.meeple = None
-
-    def make_end(self):
-        self.end = True
-
-    def set_model(self, model):
-        self.model = model
-
-    def add_meeple(self, meeple):
-        if self.model.has_meeples():
-            return False
-        else:
-            self.meeple = meeple
-            meeple.set_section(self)
-            return True
-
-    def remove_meeple(self, score):
-        if self.meeple:
-            self.meeple.repossess(score)
-            self.meeple = None
-
-    def has_meeple(self):
-        return self.meeple is not None
-
-    def get_matches(self):
-        matches = []
-
-        t = Tile('dummy', [(farm,[center]), (farm, all_out_secs)])
-        for horizontal in [True, False]:
-            pos = opp_pos(self.position, horizontal)
-            if pos != self.position:
-                coo = self.tile.coordinate.neighbor(self.position)
-                t = t.copy()
-                t.activate(coo)
-                matches.append(Section(t, pos, self.marker))
-
-        return matches
-
-    def matches(self, other):
-        return self.tile.coordinate.val == other.tile.coordinate.val and \
-            self.position == other.position
-
-    def connectable(self, other):
-        return self.marker == other.marker
-
-    def print_section(self):
-        print '\t', self.tile.name, self.tile.coordinate.displayable(), '\t', self.position, '\t', self.marker
-
-    def displayable(self):
-        if self.meeple:
-            return (meepled[self.marker], 
-                    self.meeple.get_color(),
-                    marker_color[self.marker])
-        else:
-            return (self.marker, 
-                    None,
-                    marker_color[self.marker])
 
 class Tile:
 
@@ -124,9 +59,7 @@ class Tile:
     #         if section.model.is_complete():
     #             section.model.return_meeples()
 
-    def activate(self, coordinate):
-        self.coordinate = coordinate
-        # print self.secs
+    def activate(self):
         for sec in self.secs:
             if sec == (0,0):
                 continue
@@ -214,7 +147,7 @@ class Tile:
         print
 
     def display_tile(self):
-        print 'TILE',self.name,'(',self.coordinate.x,',',self.coordinate.y,')'
+        print 'TILE',self.name
 
 def combine_tile_models(new_tile, board_tile, side):
     rel_sides = full_side[side]

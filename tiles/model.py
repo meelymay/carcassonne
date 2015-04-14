@@ -1,5 +1,3 @@
-from coordinate import *
-
 farm = ' '
 road = '-'
 castle = 'o'
@@ -224,23 +222,6 @@ class Cloister(Model):
     def combine(self, other):
         self.more_random = other.more_random
         return Model.combine(self, other)
-
-    def num_neighbors(self):
-        coord = iter(self.secs).next().tile.coordinate
-        neighbors = 0
-        for pos in all_out_secs:
-            if coord.neighbor(pos).val in Grid.grid:
-                neighbors += 1
-        return neighbors
-
-    def complete_score(self):
-        if self.num_neighbors() == 8:
-            return 9
-        else:
-            return 0
-
-    def score(self):
-        return self.num_neighbors()
 
     def displayable(self):
         return 'L'

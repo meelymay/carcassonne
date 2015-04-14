@@ -1,5 +1,6 @@
 from random import *
-from tiles import *
+from tile import *
+from section import *
 
 start_tile = Tile('start_tile', [(castle, [top]), (road,[left,right]), (road,[center]), (farm,[tleft,tright]), (farm,full_side[bottom])])
 

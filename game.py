@@ -1,4 +1,5 @@
 import sys
+from player import *
 from board import *
 from coordinate import *
 from protocol import *
@@ -82,12 +83,12 @@ class Game:
         for player in self.players:
             print '\n',player.name,"'s score:",player.score
 
-    def rotate(self, rotations):
-        self.tile.rotate_n(rotations)
-        return self.tile.gridify()
+    def rotate(self, tile, rotations=1):
+        tile.rotate_n(rotations)
+        return tile.gridify()
 
-    def place(self, position):
-        added = self.board.add(self.tile, 
+    def place(self, tile, position):
+        added = self.board.add(tile,
                                Coordinate(position[0], 
                                           position[1]))
         if not added:
@@ -117,6 +118,3 @@ class Game:
         #     print 'meeple exception'
         #     return False
         
-if __name__ == '__main__':
-    g = Game(['Amelia','Andy'])
-    g.play()
