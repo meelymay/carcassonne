@@ -4,60 +4,6 @@ from coordinate import *
 from protocol import *
 from termcolor import cprint, colored
 
-colors = ['magenta','cyan','blue','yellow']
-
-class Meeple:
-    def __init__(self, player):
-        self.player = player
-        self.section = None
-        self.color = player.get_color()
-
-    def set_section(self, section):
-        self.section = section
-
-    def repossess(self, score):
-        self.player.add_score(score)
-        self.section = None
-
-    def is_available(self):
-        return self.section is None
-
-    def displayable(self):
-        if self.section is None:
-            return self,self.player, self.section
-        else:
-            return self,self.player,self.section.displayable()
-    
-    def get_color(self):
-        return self.player.get_color()
-
-class Player:
-    
-    def __init__(self, name):
-        self.name = name
-        self.score = 0
-        self.color = colors.pop()
-        self.meeples = [Meeple(self) for m in range(7)]
-
-    def get_meeple(self):
-        for meeple in self.meeples:
-            if meeple.is_available():
-                return meeple
-        return None
-
-    def num_meeples(self):
-        mps = 0
-        for meeple in self.meeples:
-            if meeple.is_available():
-                mps += 1
-        return mps
-
-    def add_score(self, score):
-        self.score += score
-
-    def get_color(self):
-        return self.color
-
 class Game:
     
     def __init__(self, names=[]):
