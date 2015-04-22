@@ -1,118 +1,72 @@
-import sys
 from player import *
 from board import *
 from coordinate import *
-from protocol import *
-from termcolor import cprint, colored
 
 class Game:
-    
-    def __init__(self, names=[]):
-        if len(names) == 0:
-            for p in range(num_players):
-                name = 'Player'+str(p+1)
-                names.append(name)
-        self.board = Board()
+
+    def __init__(self, names):
         self.players = [Player(name) for name in names]
+        self.board = Board()
         self.player = self.players[0]
-        self.tile = None
-    
-    def draw(self):
-        self.tile = self.board.draw()
-        if self.tile is None:
-            print 'The game is over.'
-            game_over = True
-            return None
+        self.count = 0
+        self.game_over = False
+        self.game_len = 72
 
-        return self.tile.gridify()
+    def play(self):
+        while not self.game_over:
+            for player in self.players:
+                self.player = player
+                self.count += 1
+                if not self.take_turn():
+                    self.game_over = True
+                    break
+        self.board.calculate_scores()
 
-    def take_turn(self, player):
-        # show the board
-        sb = SerialGrid(self.board, player.name)
-        sb.print_grid()
-        
+    def take_turn(self):
+        player = self.player
+        self.board.display()
+
         # draw a tile
         tile = self.board.draw()
-        if tile is None or count > game_len:
+        if tile is None or self.count > self.game_len:
             print 'The game is over.'
-            game_over = True
-            break
-        
-        cprint('\n'+player.name+"'s turn",player.color)
-        print '\tmeeples:',player.num_meeples(),
-        print '\tscore:',player.score
-        print 'You have drawn:'
+            self.game_over = True
+            return False
+        print 'You drew:'
         tile.display()
-        
+ 
         # rotate and place the tile
         placed = False
         while not placed:
             # rotate the tile
             self.rotate(tile)
+            tile.display()
             # place the tile on the board
             placed = self.place(tile)
             
-            # add a meeple
-            meeple = player.get_meeple()
-            while meeple:
-                meeple = self.add_meeple(tile, meeple)
+        # add a meeple
+        meeple = player.get_meeple()
+        while meeple:
+            meeple = self.add_meeple(tile, meeple)
                 
-            # score
-            tile.score()
-
-    def play(self):
-        game_over = False
-        game_len = 72
-        count = 0
-        while not game_over:
-            count += 1
-            for player in self.players:
-                self.take_turn(player)
-        self.calculate_scores()
-
-    def next_player(self):
-        next_index = (self.players.index(self.player)+1) % len(self.players)
-        self.player = self.players[next_index]
-
-    def calculate_scores(self):
-        for model in self.board.get_models():
-            model.score_meeples()
-
-        for player in self.players:
-            print '\n',player.name,"'s score:",player.score
-
-    def rotate(self, tile, rotations=1):
-        tile.rotate_n(rotations)
-        return tile.gridify()
-
-    def place(self, tile, position):
-        added = self.board.add(tile,
-                               Coordinate(position[0], 
-                                          position[1]))
-        if not added:
-            return False
+        # score
+        tile.score()
         return True
 
-    def add_meeple(self, position):
-        meeple = self.player.get_meeple()
-        if meeple is None:
-            print 'Meeple DNE!'
-            sys.exit()
-        if True:
-        #try:
-            print 'meeple position',position
-            if tuple(position) not in all_out_secs:
-                if 'cloister' in self.tile.name:
-                    tile_add = self.tile.add_meeple(position, meeple)
-                    print 'meeple cloister',tile_add
-                    return tile_add is None
-                else:
-                    return False
-            added = self.tile.add_meeple(position, meeple)
-            print 'meeple added',added
-            return added is None
+    def rotate(self, tile):
+        rotations = self.player.get_rotations()
+        tile.rotate_n(rotations)
 
-        # except:
-        #     print 'meeple exception'
-        #     return False
-        
+    def place(self, tile):
+        coordinate = self.player.get_coordinate()
+        return self.board.place(tile, coordinate)
+
+    def add_meeple(self, tile, meeple):
+        section = self.player.get_meeple_section()
+        if section:
+            tile.place_meeple(section, meeple)
+
+if __name__ == '__main__':
+    g = Game(['Amelia', 'Dan'])
+    g.play()
+    
