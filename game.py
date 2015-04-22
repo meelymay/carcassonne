@@ -26,6 +26,40 @@ class Game:
 
         return self.tile.gridify()
 
+    def take_turn(self, player):
+        # show the board
+        sb = SerialGrid(self.board, player.name)
+        sb.print_grid()
+        
+        # draw a tile
+        tile = self.board.draw()
+        if tile is None or count > game_len:
+            print 'The game is over.'
+            game_over = True
+            break
+        
+        cprint('\n'+player.name+"'s turn",player.color)
+        print '\tmeeples:',player.num_meeples(),
+        print '\tscore:',player.score
+        print 'You have drawn:'
+        tile.display()
+        
+        # rotate and place the tile
+        placed = False
+        while not placed:
+            # rotate the tile
+            self.rotate(tile)
+            # place the tile on the board
+            placed = self.place(tile)
+            
+            # add a meeple
+            meeple = player.get_meeple()
+            while meeple:
+                meeple = self.add_meeple(tile, meeple)
+                
+            # score
+            tile.score()
+
     def play(self):
         game_over = False
         game_len = 72
@@ -33,44 +67,8 @@ class Game:
         while not game_over:
             count += 1
             for player in self.players:
-
-                # show the board
-                sb = SerialGrid(self.board, player.name)
-                sb.print_grid()
-                
-                # draw a tile
-                tile = self.board.draw()
-                if tile is None or count > game_len:
-                    print 'The game is over.'
-                    game_over = True
-                    break
-
-                cprint('\n'+player.name+"'s turn",player.color)
-                print '\tmeeples:',player.num_meeples(),
-                print '\tscore:',player.score
-                print 'You have drawn:'
-                tile.display()
-                
-                # rotate and place the tile
-                placed = False
-                while not placed:
-                    # rotate the tile
-                    self.rotate(tile)
-                    # place the tile on the board
-                    placed = self.place(tile)
-                    
-                # add a meeple
-                meeple = player.get_meeple()
-                while meeple:
-                    meeple = self.add_meeple(tile, meeple)
-
-                # return meeples
-                self.return_meeples()
+                self.take_turn(player)
         self.calculate_scores()
-
-    def return_meeples(self):
-        for model in self.board.get_models():
-            model.return_meeples()
 
     def next_player(self):
         next_index = (self.players.index(self.player)+1) % len(self.players)

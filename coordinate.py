@@ -18,7 +18,9 @@ class Coordinate:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.val = Coordinate.c1*(x+Coordinate.c2) + (y+Coordinate.c2)
+
+    def __hash__(self):
+        return Coordinate.c1*(self.x+Coordinate.c2) + (self.y+Coordinate.c2)
 
     def displayable(self):
         return '('+str(self.x)+','+str(self.y)+')'

@@ -5,17 +5,19 @@ import pdb
 
 class Tile:
 
-    def __init__(self, name, sec_clusters):
+    def __init__(self, name, territories):
         self.name = name
-        self.sec_clusters = sec_clusters
-        self.init_tile()
+        self.sections = self.set_sections_from(territories)
+        self.meeple = None
+        self.meeple_color = None
 
-    def init_tile(self):    
-        self.secs = {}
+    def sections_from_territories(self, territories):
+        secs = {}
         # setting sections
-        for (sec_type,sec_coords) in self.sec_clusters:
-            for sec_coord in sec_coords:
-                self.secs[sec_coord] = Section(self, sec_coord, sec_type)
+        for (territory_type, sections) in territories:
+            territory
+            for section in sections:
+                secs[section] = Section(self, sec_coord, sec_type)
 
         # make roads end
         roads = [self.secs[s] for s in self.secs if self.secs[s].marker == road]
@@ -27,6 +29,10 @@ class Tile:
         for sec in all_secs:
             self.secs[sec].set_model(create_model(self.secs[sec]))
         self.connect_model()
+
+    def score(self):
+        for territory in set(self.sections.values()):
+            territory.return_meeples()
         
     def connect_model(self):
         for (sec_type, sec_coords) in self.sec_clusters:
@@ -149,7 +155,7 @@ class Tile:
     def display_tile(self):
         print 'TILE',self.name
 
-def combine_tile_models(new_tile, board_tile, side):
+def combine_territories(new_tile, board_tile, side):
     rel_sides = full_side[side]
     # print rel_sides
     # print new_tile.name
@@ -160,10 +166,10 @@ def combine_tile_models(new_tile, board_tile, side):
     # combine each section of the relevant side
     for sec in rel_sides:
 
-        board_model = board_tile.secs[opp_pos(sec, side in hor_sides)].model
-        new_model = new_tile.secs[sec].model
+        board_model = board_tile.sections[opp_pos(sec, side in hor_sides)]
+        new_model = new_tile.sections[sec]
         # set new_tile's model to board's new combined model
-        new_tile.secs[sec].model = new_model.combine(board_model)
+        new_tile.sections[sec] = new_model.combine(board_model)
 
         # if new_tile.secs[sec].marker == castle:
             # print 'NEW TILE OPENINGS'
