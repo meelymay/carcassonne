@@ -9,6 +9,8 @@ class Territory:
         self.sections_open = dict([(sec, True) for sec in sections])
 
     def combine(self, section, neighbor, neighbor_sec):
+        if self.name != neighbor.name:
+            raise Exception('Adjacent sections must be the same!')
         if self != neighbor:
             for sec in neighbor.sections_open:
                 self.sections_open[sec] = neighbor.sections_open[sec]
@@ -23,7 +25,11 @@ class Territory:
         return True not in self.sections_open.values()
 
     def score(self):
-        return len(self.tiles())
+        if self.is_complete():
+            self.replace_meeples()
+            return len(self.tiles())
+        else:
+            return 0
 
     def replace_meeples(self):
         # TODO

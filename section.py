@@ -20,11 +20,11 @@ OPPOSING_DIRECTION = {
     ENE: WNW,
     W: E,
     C: C,
-    ENE: WNW,
+    ESE: WSW,
     SSW: NNW,
     S: N,
     SSE: NNE,
-    WNW: ENE,
+    WSW: ESE,
     E: W
 }
 
@@ -47,6 +47,9 @@ class Section:
 
     def combine(self, neighbor):
         self.territory.combine(self, neighbor.territory, neighbor)
+
+    def can_combine(self, neighbor):
+        return self.territory.name == neighbor.territory.name
 
     def get_type(self):
         return self.territory.name

@@ -50,6 +50,14 @@ class Tile:
     def copy(self):
         return Tile(self.name, self.inits)
 
+    def can_combine(self, neighbor, side):
+        for dir in side:
+            section = self.sections[dir]
+            neighbor_section = neighbor.sections[OPPOSING_DIRECTION[dir]]
+            if not section.can_combine(neighbor_section):
+                return False
+        return True
+
     def combine_territories(self, neighbor, side):
         for dir in side:
             section = self.sections[dir]

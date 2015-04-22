@@ -17,7 +17,8 @@ class Player:
         return sum([meeple.score for meeple in self.meeples])
 
     def get_rotations(self):
-        return int(raw_input('Rotations? '))
+        r = raw_input('Rotations? ')
+        return int(r) if r else 0
 
     def get_coordinate(self):
         x, y = raw_input('Coordinate? ').split()

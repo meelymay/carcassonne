@@ -76,6 +76,9 @@ class Board:
         if not neighbors:
             return False
         self.grid[coordinate] = tile
+        if False in [tile.can_combine(n[0], n[1]) for n in neighbors]:
+            return False
+            
         for neighbor in neighbors:
             tile.combine_territories(neighbor[0], neighbor[1])
         return True
@@ -85,7 +88,9 @@ class Board:
         for side in [N, S, E, W]:
             neighbor_coord = coordinate.neighbor(side)
             if neighbor_coord in self.grid:
-                neighbors.append((self.grid[neighbor_coord], side))
+                neighb_side = (self.grid[neighbor_coord],
+                               FULL_SIDE[side])
+                neighbors.append(neighb_side)
         return neighbors
 
     def calculate_scores(self):
