@@ -88,8 +88,7 @@ class Board:
         for side in [N, S, E, W]:
             neighbor_coord = coordinate.neighbor(side)
             if neighbor_coord in self.grid:
-                neighb_side = (self.grid[neighbor_coord],
-                               FULL_SIDE[side])
+                neighb_side = (self.grid[neighbor_coord], side)
                 neighbors.append(neighb_side)
         return neighbors
 

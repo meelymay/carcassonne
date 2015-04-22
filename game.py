@@ -34,6 +34,8 @@ class Game:
             return False
         print 'You drew:'
         tile.display()
+        for territory in tile.get_territories():
+            print territory
  
         # rotate and place the tile
         placed = False
@@ -48,9 +50,11 @@ class Game:
         meeple = player.get_meeple()
         while meeple:
             meeple = self.add_meeple(tile, meeple)
-                
+
         # score
         tile.score()
+        for territory in tile.get_territories():
+            print territory
         return True
 
     def rotate(self, tile):

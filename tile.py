@@ -59,7 +59,7 @@ class Tile:
         return True
 
     def combine_territories(self, neighbor, side):
-        for dir in side:
+        for dir in FULL_SIDE[side]:
             section = self.sections[dir]
             neighbor_section = neighbor.sections[OPPOSING_DIRECTION[dir]]
             section.combine(neighbor_section)

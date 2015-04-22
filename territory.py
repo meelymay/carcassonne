@@ -38,6 +38,15 @@ class Territory:
 
         meeples[0].replace(self.score())
 
+    def __str__(self):
+        s = ''
+        s += 'Territory ' + self.name
+        
+        for sec in self.sections_open:
+            s += '\n' + str(sec) + ' ' + str(self.sections_open[sec])
+
+        return s
+
 class Castle(Territory):
     def __init__(self, sections):
         self.name = 'C'

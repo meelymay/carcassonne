@@ -66,5 +66,24 @@ class TileTest(unittest.TestCase):
       self.assertEqual(t.can_combine(n, N), True)
       self.assertEqual(t.can_combine(n, W), True)
 
+  def test_combine(self):
+      clusters = [
+          (CASTLE, [NNW, N, NNE]),
+          (ROAD, [W, E]),
+          (FARM, [WNW, ENE]),
+          (FARM, [WSW, SSW, S, SSE, ESE]),
+          (None, [C])
+          ]
+      t = tile.Tile('start', clusters)
+      n = t.copy()
+
+      n.rotate_n(2)
+      t.combine_territories(n, N)
+
+      territory = list(t.get_territories())[0]
+
+      self.assertEqual(territory.is_complete(), True)
+
+
 if __name__ == '__main__':
     unittest.main()
