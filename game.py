@@ -2,6 +2,7 @@ from player import *
 from board import *
 from coordinate import *
 
+
 class Game:
 
     def __init__(self, names):
@@ -34,9 +35,8 @@ class Game:
             return False
         print 'You drew:'
         tile.display()
-        for territory in tile.get_territories():
-            print territory
- 
+        # tile.display_addrs()
+
         # rotate and place the tile
         placed = False
         while not placed:
@@ -45,7 +45,9 @@ class Game:
             tile.display()
             # place the tile on the board
             placed = self.place(tile)
-            
+            if not placed:
+                print 'Tile cannot placed there.'
+
         # add a meeple
         meeple = player.get_meeple()
         while meeple:
@@ -53,8 +55,7 @@ class Game:
 
         # score
         tile.score()
-        for territory in tile.get_territories():
-            print territory
+
         return True
 
     def rotate(self, tile):
@@ -68,9 +69,9 @@ class Game:
     def add_meeple(self, tile, meeple):
         section = self.player.get_meeple_section()
         if section:
-            tile.place_meeple(section, meeple)
+            if not tile.place_meeple(section, meeple):
+                return meeple
 
 if __name__ == '__main__':
     g = Game(['Amelia', 'Dan'])
     g.play()
-    

@@ -37,16 +37,28 @@ FULL_SIDE = {
 
 ALL_SIDES = FULL_SIDE[W] + FULL_SIDE[N] + FULL_SIDE[E] + FULL_SIDE[S]
 
+COLORS = {
+    'c': '\033[41m',
+    'r': '\033[47m',
+    'f': '\033[42m',
+    'l': '\033[45m'
+}
+
+ENDC = '\033[0m'
+MEEPLE = '\033[36m\033[1m'
+
 
 class Section:
-    
+
     def __init__(self, tile):
         self.tile = tile
         self.territory = None
         self.meeple = None
+        self.id = str([self])[-7:-2]
 
     def combine(self, neighbor):
         self.territory.combine(self, neighbor.territory, neighbor)
+        neighbor.territory = self.territory
 
     def can_combine(self, neighbor):
         return self.territory.name == neighbor.territory.name
@@ -55,17 +67,24 @@ class Section:
         return self.territory.name
 
     def place_meeple(self, meeple):
+        if self.territory.get_meeples():
+            return False
         self.meeple = meeple
         meeple.place()
+        return True
 
     def replace_meeple(self, score):
         self.meeple.replace(score)
         self.meeple = None
 
+    def addr(self):
+        return self.id
+
     def __str__(self):
         if not self.territory:
             return ' '
+        name = self.territory.name
         if self.meeple:
-            return self.territory.name.lower()
+            return COLORS[name.lower()] + MEEPLE + 'X' + ENDC
         else:
-            return self.territory.name
+            return COLORS[name.lower()] + ' ' + ENDC

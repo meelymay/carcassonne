@@ -3,9 +3,6 @@ from territory import *
 
 ALL_SIDES = []
 
-def opposing_section(section):
-    # TODO
-    pass
 
 class Tile:
 
@@ -20,27 +17,27 @@ class Tile:
           (None, [C])
         ]
         """
-        # TODO
         self.name = name
         self.inits = territories
         self.sections = {}
 
         for territory_type, directions in territories:
-            for dir in directions:
-                if dir in self.sections:
+            for direc in directions:
+                if direc in self.sections:
                     print 'TERRITORIES ', territories
                     print 'SECTIONS ', self.sections
-                    raise Exception('Multiple sections for direction: ' + dir)
-                self.sections[dir] = Section(self)
+                    raise Exception('Multiple sections for direction: ' + direc)
+                self.sections[direc] = Section(self)
 
-            if territory_type:
-                create_territory = TERRITORY_TYPES[territory_type]
-                territory = create_territory([self.sections[dir] for dir in directions])
-            else:
-                territory = None
+            create_territory = TERRITORY_TYPES[territory_type]
+            territory = create_territory([self.sections[direc] for direc in directions])
 
-            for dir in directions:
-                self.sections[dir].territory = territory
+            for direc in directions:
+                self.sections[direc].territory = territory
+
+        # close center section
+        center = self.sections[C]
+        center.territory.close(center)
 
         if len(self.sections) != 13:
             print 'TERRITORIES ', territories
@@ -59,34 +56,33 @@ class Tile:
         return True
 
     def combine_territories(self, neighbor, side):
-        for dir in FULL_SIDE[side]:
-            section = self.sections[dir]
-            neighbor_section = neighbor.sections[OPPOSING_DIRECTION[dir]]
+        """
+        Combine the territories of self and the neighbor to the SIDE side
+        """
+        for direct in FULL_SIDE[side]:
+            opp = OPPOSING_DIRECTION[direct]
+            # print 'Combining %s(%s) \tand %s(%s)' % (direct, self.sections[direct].addr(),
+            #                                         opp, neighbor.sections[opp].addr())
+
+            section = self.sections[direct]
+            neighbor_section = neighbor.sections[OPPOSING_DIRECTION[direct]]
             section.combine(neighbor_section)
-    
+
     def display(self):
-#         print [' ' + str(self.sections[N]) + ' ',
-#         print str(self.sections[W]) + ' ' + str(self.sections[E]),
-#         print ' ' + str(self.sections[S]) + ' ']
         for i in self.displayable():
             print i
 
     def displayable(self):
-        #   [[' ', self.sections[N], ' '],
-        #    [self.sections[W], ' ', self.sections[E]],
-        #    [' ', self.sections[S], ' ']]
-
-        return ['  ' + str(self.sections[N]) + '  ',
-                str(self.sections[W]) + ' ' + str(self.sections[C]) + ' ' +  str(self.sections[E]),
-                '  ' + str(self.sections[S]) + '  ']
-
+        return map(lambda sec_list: ''.join(map(lambda sec: str(self.sections[sec]), sec_list)),
+                   [[WNW, NNW, N, NNE, ENE],
+                    [W, W, C, E, E],
+                    [WSW, SSW, S, SSE, ESE]])
 
     def rotate_n(self, rotations):
         for i in range(rotations):
             self.rotate()
 
     def rotate(self):
-        # TODO
         new_sections = {}
 
         new_sections[C] = self.sections[C]
@@ -110,11 +106,22 @@ class Tile:
         self.sections = new_sections
 
     def place_meeple(self, section, meeple):
-        self.sections[section].place_meeple(meeple)
+        return self.sections[section].place_meeple(meeple)
 
     def score(self):
         for territory in self.get_territories():
+            print territory
             territory.score()
 
+    def display_addrs(self):
+        def pretty(x):
+            sec = self.sections[x]
+            ter = sec.territory
+            return sec.addr() + ':' + ter.name + str(ter.id)
+
+        print '%s\t%s\t%s\t%s\t%s' % tuple([pretty(x) for x in [WNW, NNW, N, NNE, ENE]])
+        print '%s\t%s\t%s\t%s\t%s' % tuple([pretty(x) for x in [W, W, C, E, E]])
+        print '%s\t%s\t%s\t%s\t%s' % tuple([pretty(x) for x in [WSW, SSW, S, SSE, ESE]])
+
     def get_territories(self):
-        return set([sec.territory for sec in self.sections.values() if sec.territory != None])
+        return set([sec.territory for sec in self.sections.values() if sec.territory is not None])

@@ -1,6 +1,7 @@
 from deck import *
 from coordinate import *
 
+
 def num_3string(i):
     if i >= 0:
         if abs(i) > 10:
@@ -12,6 +13,7 @@ def num_3string(i):
             return str(i)
         else:
             return str(i)+' '
+
 
 def num_5string(i):
     if i == ' ':
@@ -27,11 +29,12 @@ def num_5string(i):
         else:
             return ' '+str(i)+'  '
 
+
 class Board:
-    
+
     def __init__(self):
         self.deck = Deck()
-        self.grid = {Coordinate(0,0): START_TILE}
+        self.grid = {Coordinate(0, 0): START_TILE}
 
     def draw(self):
         return self.deck.draw()
@@ -45,13 +48,13 @@ class Board:
         board = self
 
         # width of row numbers
-        print '    ',
+        print '     ',
         # column numbers
         for i in range(min_x, max_x+1):
             print num_5string(i),
         print
         # each row on board
-        for y in range(max_y, min_y-1,-1):
+        for y in range(max_y, min_y - 1, -1):
             # row number
             for i in range(3):
                 if i == 1:
@@ -59,8 +62,8 @@ class Board:
                 else:
                     print num_5string(' '),
                 # each column on board
-                for x in range(min_x, max_x+1):
-                    c = Coordinate(x,y)
+                for x in range(min_x, max_x + 1):
+                    c = Coordinate(x, y)
                     if c in board.grid:
                         tmp_tile = board.grid[c]
                         tmp_disp = tmp_tile.displayable()
@@ -70,17 +73,18 @@ class Board:
                         print num_5string(' '),
                 print
 
-
     def place(self, tile, coordinate):
+        if coordinate in self.grid:
+            return False
         neighbors = self.get_neighbors(coordinate)
         if not neighbors:
             return False
-        self.grid[coordinate] = tile
         if False in [tile.can_combine(n[0], n[1]) for n in neighbors]:
             return False
-            
+
         for neighbor in neighbors:
             tile.combine_territories(neighbor[0], neighbor[1])
+        self.grid[coordinate] = tile
         return True
 
     def get_neighbors(self, coordinate):
@@ -93,5 +97,5 @@ class Board:
         return neighbors
 
     def calculate_scores(self):
-        # TODO
+        # TODO calculate scores on completed board
         return 0
