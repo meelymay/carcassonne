@@ -25,6 +25,7 @@ class Territory:
             for sec in neighbor.sections_open:
                 # set the territory of the section to this one
                 sec.territory = self
+                # TODO (bug) sometimes territories are closing early
                 # if the section hasn't already been added to this territory,
                 if sec not in self.sections_open:
                     # add it to this territories sections
@@ -41,9 +42,13 @@ class Territory:
         opens = self.sections_open
         return True not in opens.values()
 
+    def calc_score(self):
+        return len(self.tiles())
+
     def score(self):
         if self.is_complete():
-            s = len(self.tiles())
+            s = self.calc_score()
+            print self, 'score', s
             self.replace_meeples(s)
             return s
         else:
@@ -54,13 +59,15 @@ class Territory:
 
     def replace_meeples(self, s):
         # TODO find out who wins territory?
-        color = 'dan'
+        player = None
         for sec in self.sections_open:
             meeple = sec.meeple
             sec.meeple = None
             if not meeple:
                 continue
-            if color == meeple.color:
+            if player is None:
+                player = meeple.name
+            if player == meeple.name:
                 meeple.replace(s)
             else:
                 meeple.replace(0)
@@ -87,6 +94,9 @@ class Castle(Territory):
         Territory.__init__(self, sections)
         self.name = 'C'
 
+    def calc_score(self):
+        return len(self.tiles())*2
+
 
 class Road(Territory):
     def __init__(self, sections):
@@ -99,14 +109,21 @@ class Farm(Territory):
         Territory.__init__(self, sections)
         self.name = 'F'
 
+    def is_complete(self):
+        return False
+
 
 class Cloister(Territory):
     def __init__(self, sections):
         Territory.__init__(self, sections)
         self.name = 'L'
+        self.tiles = set([sec.tile for sec in sections])
+
+    def combine(self, section, neighbor, neighbor_sec):
+        self.tiles.add(neighbor_sec.tile)
 
     def is_complete(self):
-        return False
+        return len(self.tiles) == 9
 
 
 TERRITORY_TYPES = {

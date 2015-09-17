@@ -141,5 +141,7 @@ class TileTest(unittest.TestCase):
         t = c1.sections[N].territory
         self.assertTrue(territory.is_complete())
 
+    # TODO write a test that fails when the sections not reassigned territories correctly
+
 if __name__ == '__main__':
     unittest.main()

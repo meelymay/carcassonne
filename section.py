@@ -36,6 +36,8 @@ FULL_SIDE = {
 }
 
 ALL_SIDES = FULL_SIDE[W] + FULL_SIDE[N] + FULL_SIDE[E] + FULL_SIDE[S]
+ALL_SECTIONS = ALL_SIDES + [C]
+
 
 COLORS = {
     'c': '\033[41m',
@@ -85,6 +87,6 @@ class Section:
             return ' '
         name = self.territory.name
         if self.meeple:
-            return COLORS[name.lower()] + MEEPLE + 'X' + ENDC
+            return COLORS[name.lower()] + self.meeple.color + '#' + ENDC
         else:
             return COLORS[name.lower()] + ' ' + ENDC

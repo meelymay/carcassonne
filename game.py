@@ -1,13 +1,15 @@
 from player import *
+from ai_player import *
 from board import *
 from coordinate import *
+import time
 
 
 class Game:
 
     def __init__(self, names):
-        self.players = [Player(name) for name in names]
         self.board = Board()
+        self.players = [AIPlayer('IBM', self.board), AIPlayer('HAL', self.board)]
         self.player = self.players[0]
         self.count = 0
         self.game_over = False
@@ -15,16 +17,20 @@ class Game:
 
     def play(self):
         while not self.game_over:
+            time.sleep(1)
             for player in self.players:
                 self.player = player
                 self.count += 1
                 if not self.take_turn():
                     self.game_over = True
                     break
+                for p in self.players:
+                    print 'Player %s has score \t%s.' % (p.name, p.score())
         self.board.calculate_scores()
 
     def take_turn(self):
         player = self.player
+        print "\n------------------\nPlayer %s's turn!" % (player.name)
         self.board.display()
 
         # draw a tile
@@ -35,6 +41,7 @@ class Game:
             return False
         print 'You drew:'
         tile.display()
+        player.set_tile(tile)
         # tile.display_addrs()
 
         # rotate and place the tile
@@ -50,7 +57,8 @@ class Game:
 
         # add a meeple
         meeple = player.get_meeple()
-        while meeple:
+        # while meeple:
+        if meeple:
             meeple = self.add_meeple(tile, meeple)
 
         # score

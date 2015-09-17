@@ -1,6 +1,8 @@
 carcassonne
 ===========
 
+For now: $ python game.py
+
 a nifty game and tile calculator for the game Carcassonne
 
 Game

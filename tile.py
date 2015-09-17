@@ -110,7 +110,6 @@ class Tile:
 
     def score(self):
         for territory in self.get_territories():
-            print territory
             territory.score()
 
     def display_addrs(self):
