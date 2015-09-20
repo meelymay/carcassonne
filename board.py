@@ -88,12 +88,23 @@ class Board:
 
     def place(self, tile, coordinate):
         if not self.can_place(tile, coordinate):
-            return False
+            return None
 
         for neighbor in self.get_neighbors(coordinate):
             tile.combine_territories(neighbor[0], neighbor[1])
+
+        center = tile.sections[C]
+
+        # add to neighboring meeples
+        for neighbor in self.get_all_neighbors(coordinate):
+            neighbor_center = neighbor.sections[C]
+            if center.territory.name == 'L':
+                center.combine(neighbor_center, cloister=True)
+            if neighbor_center.territory.name == 'L':
+                neighbor_center.combine(center, cloister=True)
+
         self.grid[coordinate] = tile
-        return True
+        return coordinate
 
     def get_neighbors(self, coordinate):
         neighbors = []
@@ -104,6 +115,17 @@ class Board:
                 neighbors.append(neighb_side)
         return neighbors
 
+    def get_all_neighbors(self, coordinate):
+        neighbors = []
+        for x in range(coordinate.x-1, coordinate.x+2):
+            for y in range(coordinate.y-1, coordinate.y+2):
+                neighbor_coord = Coordinate(x, y)
+                if neighbor_coord in self.grid:
+                    neighbor = self.grid[neighbor_coord]
+                    neighbors.append(neighbor)
+        return neighbors
+
     def calculate_scores(self):
-        # TODO calculate scores on completed board
-        return 0
+        for c in self.grid:
+            t = self.grid[c]
+            t.score(end_game=True)

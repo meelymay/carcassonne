@@ -9,24 +9,30 @@ class Game:
 
     def __init__(self, names):
         self.board = Board()
-        self.players = [AIPlayer('IBM', self.board), AIPlayer('HAL', self.board)]
+        self.players = [AIPlayer('HAL', self.board), Player('Ilana')]
         self.player = self.players[0]
         self.count = 0
         self.game_over = False
-        self.game_len = 72
+        self.game_len = 15
 
     def play(self):
         while not self.game_over:
-            time.sleep(1)
+            # time.sleep(1)
             for player in self.players:
                 self.player = player
                 self.count += 1
+                for p in self.players:
+                    print 'Player %s has score \t%s.' % (p.name, p.score())
                 if not self.take_turn():
                     self.game_over = True
                     break
-                for p in self.players:
-                    print 'Player %s has score \t%s.' % (p.name, p.score())
         self.board.calculate_scores()
+        winner = max(self.players, key=lambda x: x.score())
+        for p in self.players:
+            w = ''
+            if p == winner:
+                w = '<-- WINS!'
+            print 'Player %s has score \t%s. %s' % (p.name, p.score(), w)
 
     def take_turn(self):
         player = self.player
@@ -45,14 +51,14 @@ class Game:
         # tile.display_addrs()
 
         # rotate and place the tile
-        placed = False
-        while not placed:
+        placed = None
+        while placed is None:
             # rotate the tile
             self.rotate(tile)
             tile.display()
             # place the tile on the board
             placed = self.place(tile)
-            if not placed:
+            if placed is None:
                 print 'Tile cannot placed there.'
 
         # add a meeple
@@ -63,6 +69,9 @@ class Game:
 
         # score
         tile.score()
+        # check for finished cloisters
+        for neighbor in self.board.get_all_neighbors(placed):
+            neighbor.score()
 
         return True
 

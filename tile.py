@@ -68,6 +68,13 @@ class Tile:
             neighbor_section = neighbor.sections[OPPOSING_DIRECTION[direct]]
             section.combine(neighbor_section)
 
+        center = self.sections[C]
+        neighbor_center = neighbor.sections[C]
+        if center.territory.name == 'L':
+            center.combine(neighbor_center, cloister=True)
+        if neighbor_center.territory.name == 'L':
+            neighbor_center.combine(center, cloister=True)
+
     def display(self):
         for i in self.displayable():
             print i
@@ -108,9 +115,9 @@ class Tile:
     def place_meeple(self, section, meeple):
         return self.sections[section].place_meeple(meeple)
 
-    def score(self):
+    def score(self, end_game=False):
         for territory in self.get_territories():
-            territory.score()
+            territory.score(end_game)
 
     def display_addrs(self):
         def pretty(x):

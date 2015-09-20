@@ -42,13 +42,12 @@ class Territory:
         opens = self.sections_open
         return True not in opens.values()
 
-    def calc_score(self):
+    def calc_score(self, end_game=False):
         return len(self.tiles())
 
-    def score(self):
-        if self.is_complete():
-            s = self.calc_score()
-            print self, 'score', s
+    def score(self, end_game=False):
+        if end_game or self.is_complete():
+            s = self.calc_score(end_game=end_game)
             self.replace_meeples(s)
             return s
         else:
@@ -94,8 +93,12 @@ class Castle(Territory):
         Territory.__init__(self, sections)
         self.name = 'C'
 
-    def calc_score(self):
-        return len(self.tiles())*2
+    def calc_score(self, end_game=False):
+        s = len(self.tiles())
+        if end_game:
+            return s
+        else:
+            return s*2
 
 
 class Road(Territory):
@@ -109,6 +112,18 @@ class Farm(Territory):
         Territory.__init__(self, sections)
         self.name = 'F'
 
+    def calc_score(self, end_game=False):
+        castles = set()
+        tiles = self.tiles()
+        for tile in tiles:
+            territories = tile.get_territories()
+            for neighbor in territories:
+                # TODO exclude castles not adjacent to farm
+                if neighbor.name == 'C' and neighbor.is_complete():
+                    castles.add(neighbor)
+
+        return len(castles)*3
+
     def is_complete(self):
         return False
 
@@ -117,13 +132,20 @@ class Cloister(Territory):
     def __init__(self, sections):
         Territory.__init__(self, sections)
         self.name = 'L'
-        self.tiles = set([sec.tile for sec in sections])
+        self.center = sections[0]
+
+    def get_meeples(self):
+        meeple = self.center.meeple
+        if meeple:
+            return [meeple]
+        else:
+            return None
 
     def combine(self, section, neighbor, neighbor_sec):
-        self.tiles.add(neighbor_sec.tile)
+        self.sections_open[neighbor_sec] = True
 
     def is_complete(self):
-        return len(self.tiles) == 9
+        return len(self.tiles()) == 9
 
 
 TERRITORY_TYPES = {

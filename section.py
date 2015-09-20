@@ -58,9 +58,13 @@ class Section:
         self.meeple = None
         self.id = str([self])[-7:-2]
 
-    def combine(self, neighbor):
+    def combine(self, neighbor, cloister=False):
+        if not cloister and not self.can_combine(neighbor):
+            print self.territory, neighbor.territory
+            raise Exception('Cannot combine non-like territories.')
         self.territory.combine(self, neighbor.territory, neighbor)
-        neighbor.territory = self.territory
+        if not cloister:
+            neighbor.territory = self.territory
 
     def can_combine(self, neighbor):
         return self.territory.name == neighbor.territory.name
