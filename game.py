@@ -9,11 +9,11 @@ class Game:
 
     def __init__(self, names):
         self.board = Board()
-        self.players = [AIPlayer('HAL', self.board), Player('Ilana')]
+        self.players = [Player('Dan'), Player('Amelia')]
         self.player = self.players[0]
         self.count = 0
         self.game_over = False
-        self.game_len = 15
+        self.game_len = 72
 
     def play(self):
         while not self.game_over:

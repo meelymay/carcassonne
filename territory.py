@@ -58,15 +58,24 @@ class Territory:
 
     def replace_meeples(self, s):
         # TODO find out who wins territory?
-        player = None
+        meeples = self.get_meeples()
+        if len(meeples) == 0:
+            return
+        elif len(meeples) == 1:
+            winner = meeples[0].name
+        else:
+            meeple_counts = dict(reduce([
+                lambda x, y: (x[0], x[1]+y[1]),
+                [(m.name, 1) for m in meeples]
+                ]))
+            winner = max(meeple_counts, key=lambda x: meeple_counts[x])
+
         for sec in self.sections_open:
             meeple = sec.meeple
             sec.meeple = None
             if not meeple:
                 continue
-            if player is None:
-                player = meeple.name
-            if player == meeple.name:
+            if winner == meeple.name:
                 meeple.replace(s)
             else:
                 meeple.replace(0)
@@ -139,7 +148,7 @@ class Cloister(Territory):
         if meeple:
             return [meeple]
         else:
-            return None
+            return []
 
     def combine(self, section, neighbor, neighbor_sec):
         self.sections_open[neighbor_sec] = True
