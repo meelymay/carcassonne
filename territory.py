@@ -1,4 +1,5 @@
 import random
+from collections import defaultdict
 
 FARM = 'farm'
 CASTLE = 'castle'
@@ -56,19 +57,20 @@ class Territory:
     def get_meeples(self):
         return [sec.meeple for sec in self.sections_open if sec.meeple is not None]
 
-    def replace_meeples(self, s):
-        # TODO find out who wins territory?
+    def winner(self):
         meeples = self.get_meeples()
         if len(meeples) == 0:
-            return
+            return None
         elif len(meeples) == 1:
-            winner = meeples[0].name
+            return meeples[0].name
         else:
-            meeple_counts = dict(reduce([
-                lambda x, y: (x[0], x[1]+y[1]),
-                [(m.name, 1) for m in meeples]
-                ]))
-            winner = max(meeple_counts, key=lambda x: meeple_counts[x])
+            meeple_counts = defaultdict(int)
+            for m in meeples:
+                meeple_counts[m] += 1
+            return max(meeple_counts, key=lambda x: meeple_counts[x])
+
+    def replace_meeples(self, s):
+        winner = self.winner()
 
         for sec in self.sections_open:
             meeple = sec.meeple
@@ -76,7 +78,9 @@ class Territory:
             if not meeple:
                 continue
             if winner == meeple.name:
+                # only score once
                 meeple.replace(s)
+                winner = None
             else:
                 meeple.replace(0)
 

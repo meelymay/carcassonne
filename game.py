@@ -9,7 +9,7 @@ class Game:
 
     def __init__(self, names):
         self.board = Board()
-        self.players = [Player('Dan'), Player('Amelia')]
+        self.players = [AIPlayer('HAL', self.board), AIPlayer('IBM', self.board)]
         self.player = self.players[0]
         self.count = 0
         self.game_over = False
@@ -17,12 +17,12 @@ class Game:
 
     def play(self):
         while not self.game_over:
-            # time.sleep(1)
+            time.sleep(1)
             for player in self.players:
                 self.player = player
                 self.count += 1
                 for p in self.players:
-                    print 'Player %s has score \t%s.' % (p.name, p.score())
+                    print 'Player %s has score \t%s.' % (p, p.score())
                 if not self.take_turn():
                     self.game_over = True
                     break
@@ -32,11 +32,11 @@ class Game:
             w = ''
             if p == winner:
                 w = '<-- WINS!'
-            print 'Player %s has score \t%s. %s' % (p.name, p.score(), w)
+            print 'Player %s has score \t%s. %s' % (p, p.score(), w)
 
     def take_turn(self):
         player = self.player
-        print "\n------------------\nPlayer %s's turn!" % (player.name)
+        print "\n------------------\nPlayer %s's turn!" % (player)
         self.board.display()
 
         # draw a tile

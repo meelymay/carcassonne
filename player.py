@@ -6,7 +6,7 @@ import section
 class Player:
 
     def __init__(self, name):
-        self.name = name + ''.join([' ' for i in range(6-len(name))])
+        self.name = name
         self.meeples = [Meeple(name) for x in range(7)]
 
     def set_tile(self, tile):
@@ -49,3 +49,6 @@ class Player:
                 return
             except KeyError:
                 continue
+
+    def __str__(self):
+        return self.name + ''.join([' ' for i in range(6-len(self.name))])
