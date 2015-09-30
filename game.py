@@ -9,7 +9,7 @@ class Game:
 
     def __init__(self, names):
         self.board = Board()
-        self.players = [AIPlayer('HAL', self.board), AIPlayer('IBM', self.board)]
+        self.players = [Player('Amelia'), AIPlayer('IBM', self.board)]
         self.player = self.players[0]
         self.count = 0
         self.game_over = False
@@ -17,7 +17,7 @@ class Game:
 
     def play(self):
         while not self.game_over:
-            time.sleep(1)
+            # time.sleep(1)
             for player in self.players:
                 self.player = player
                 self.count += 1

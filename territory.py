@@ -93,10 +93,10 @@ class Territory:
 
     def __str__(self):
         s = ''
-        s += '%s ter%s = ' % (self.name, self.id)
-        for sec in self.sections_open:
-            if self.sections_open[sec]:
-                s += '\t%s,' % sec.addr()
+        s += '%ster%s = ' % (self.name, self.id)
+        # for sec in self.sections_open:
+        #     if self.sections_open[sec]:
+        #         s += '\t%s,' % sec.addr()
 
         return s
 
