@@ -12,10 +12,20 @@ TILE_KEY = 'tile key'
 
 
 class TerritoryValue:
-    def __init__(self, territory, mate=None):
+    def __init__(self, territory, mate=None, meepled=False):
         self.t = territory
         self.score = self.t.calc_score()
+        self.owner = self.t.winner()
+        self.type = self.t.name
+        self.new_territory = meepled
 
+    def fitness(self, heuristics):
+        fit = 0
+
+        fit += heristics['score'] * self.score
+        fit += heristics[] * self.score
+
+        return heuristics[self.type] * fit
 
 class Play:
     def __init__(self, rotations, coordinate, section):
@@ -86,9 +96,30 @@ class AIPlayer(Player):
                 return t
         return None
 
+    def get_fit2(self, coordinate, meeple_sec):
+        neighbors = self.board.get_neighbors(coordinate)
+
+        territories = {}
+
+        meeple_territory = self.tile.sections[meeple_sec].territory
+        territories[meeple_territory] = TerritoryValue(meeple_territory)
+
+        for sec in self.tile.sections:
+            mate = self.tile.sections[sec].territory
+            t = self.section_territory(sec, neighbors)
+            tv = TerritoryValue(t, mate=mate, meepled=mate == meeple_territory)
+            territories[t] = tv
+
+        fit = 0
+        for t in territories:
+            fit += territories[t].fitness(self.heuristics)
+
+        return fit
+
     def get_fit(self, coordinate, meeple_sec):
         neighbors = self.board.get_neighbors(coordinate)
-        fit = 0 # len(neighbors)
+        fit = 0
+        # len(neighbors)
 
         nts = {}
         if meeple_sec:
