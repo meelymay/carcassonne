@@ -10,22 +10,77 @@ OWN_KEY = 'own   key'
 OLD_OPEN_KEY = 'old open key'
 TILE_KEY = 'tile key'
 
+TYPE_HEU = 'type_heu'
+
+OPENS_HEU = 'opens_heu'
+CLOSED = 'closed'
+MORE = 'more'
+LESS = 'less'
+
+OWNER_HEU = 'owner_heu'
+ME = 'me'
+THEM = 'them'
+NEW = 'new'
+
+HEURISTICS = {
+    TYPE_HEU: {
+        'C': 4,
+        'L': 2,
+        'R': 3,
+        'F': 1
+    },
+    OWNER_HEU: {
+        NEW: 2,
+        ME: 1,
+        THEM: -1,
+        None: 0
+    },
+    OPENS_HEU: {
+        CLOSED: 3,
+        MORE: .1,
+        LESS: 2,
+        None: 1
+    }
+}
 
 class TerritoryValue:
-    def __init__(self, territory, mate=None, meepled=False):
+    def __init__(self, territory, me, mate=None, meepled=False):
         self.t = territory
         self.score = self.t.calc_score()
         self.owner = self.t.winner()
+        if meepled and not mate.get_meeples():
+            self.owner = NEW
+        elif self.owner == me:
+            self.owner = ME
+        elif self.owner:
+            self.owner = THEM
+        else:
+            self.owner = None
+
         self.type = self.t.name
-        self.new_territory = meepled
+
+        opens = [x for x in self.t.sections_open if self.t.sections_open[x]]
+        open_no = len(opens)
+        mate_no = 2
+        if mate:
+            mate_opens = [x for x in mate.sections_open if mate.sections_open[x]]
+            mate_no = len(mate_opens)
+        if open_no == mate_no:
+            self.opens = CLOSED
+        elif open_no > mate_no:
+            self.opens = LESS
+        else:
+            self.opens = MORE
 
     def fitness(self, heuristics):
-        fit = 0
+        fit = self.score
+        fit *= heuristics[OPENS_HEU][self.opens]
+        fit *= heuristics[OWNER_HEU][self.owner]
+        fit *= heuristics[TYPE_HEU][self.type]
+        print '\t%s' % (self.t)
+        print '\topens: %s\towner: %s\t type %s' % (self.opens, self.owner, self.type)
 
-        fit += heristics['score'] * self.score
-        fit += heristics[] * self.score
-
-        return heuristics[self.type] * fit
+        return fit
 
 class Play:
     def __init__(self, rotations, coordinate, section):
@@ -44,9 +99,9 @@ class Play:
 
 
 class AIPlayer(Player):
-    def __init__(self, name, board, params):
+    def __init__(self, name, board, heuristics=HEURISTICS):
         self.board = board
-        self.heuristics = params
+        self.heuristics = heuristics
         Player.__init__(self, name)
 
     def is_mine(territory, rev=False):
@@ -101,13 +156,18 @@ class AIPlayer(Player):
 
         territories = {}
 
-        meeple_territory = self.tile.sections[meeple_sec].territory
-        territories[meeple_territory] = TerritoryValue(meeple_territory)
+        if meeple_sec:
+            meeple_territory = self.tile.sections[meeple_sec].territory
+            territories[meeple_territory] = TerritoryValue(meeple_territory, self.name)
+        else:
+            meeple_territory = None
 
         for sec in self.tile.sections:
             mate = self.tile.sections[sec].territory
             t = self.section_territory(sec, neighbors)
-            tv = TerritoryValue(t, mate=mate, meepled=mate == meeple_territory)
+            if not t:
+                continue
+            tv = TerritoryValue(t, self.name, mate=mate, meepled=mate == meeple_territory)
             territories[t] = tv
 
         fit = 0
@@ -287,7 +347,7 @@ class AIPlayer(Player):
                             print '...with meeple', sec
                         # section.ALL_SECTIONS + ['']:
                             p = Play(rotation, c, sec)
-                            possibilities[p] = self.get_fit(c, sec)
+                            possibilities[p] = self.get_fit2(c, sec)
                             print '\tplay %s fit = %s' % (p, possibilities[p])
                         # found = True
                         # break
