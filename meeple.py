@@ -24,6 +24,6 @@ class Meeple:
         self.placed = True
 
     def replace(self, score):
-        print '%s points to %s!' % (score, self.name)
+        # print '%s points to %s!' % (score, self.name)
         self.score += score
         self.placed = False

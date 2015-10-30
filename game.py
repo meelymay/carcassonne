@@ -7,9 +7,11 @@ import time
 
 class Game:
 
-    def __init__(self, names):
+    def __init__(self, strategies, robot=False):
         self.board = Board()
-        self.players = [Player('Amelia'), AIPlayer('IBM', self.board)]
+        self.robot = robot
+        self.players = [AIPlayer('HAL', self.board, heuristics=strategies[0]),
+                        AIPlayer('IBM', self.board, heuristics=strategies[1])]
         self.player = self.players[0]
         self.count = 0
         self.game_over = False
@@ -21,32 +23,46 @@ class Game:
             for player in self.players:
                 self.player = player
                 self.count += 1
-                for p in self.players:
-                    print 'Player %s has score \t%s.' % (p, p.score())
+                if not self.robot:
+                    for p in self.players:
+                        print 'Player %s has score \t%s.' % (p, p.score())
                 if not self.take_turn():
                     self.game_over = True
                     break
         self.board.calculate_scores()
+
         winner = max(self.players, key=lambda x: x.score())
+        game_dict = {}
         for p in self.players:
             w = ''
             if p == winner:
                 w = '<-- WINS!'
-            print 'Player %s has score \t%s. %s' % (p, p.score(), w)
+            if self.robot:
+                game_dict[p.name] = {
+                    'strat': p.heuristics,
+                    'score': p.score()
+                }
+            else:
+                print 'Player %s has score \t%s. %s' % (p, p.score(), w)
+        if self.robot:
+            print json.dumps(game_dict)
 
     def take_turn(self):
         player = self.player
-        print "\n------------------\nPlayer %s's turn!" % (player)
-        self.board.display()
+        if not self.robot:
+            print "\n------------------\nPlayer %s's turn!" % (player)
+            self.board.display()
 
         # draw a tile
         tile = self.board.draw()
         if tile is None or self.count > self.game_len:
-            print 'The game is over.'
+            if not self.robot:
+                print 'The game is over.'
             self.game_over = True
             return False
-        print 'You drew:'
-        tile.display()
+        if not self.robot:
+            print 'You drew:'
+            tile.display()
         player.set_tile(tile)
         # tile.display_addrs()
 
@@ -55,11 +71,13 @@ class Game:
         while placed is None:
             # rotate the tile
             self.rotate(tile)
-            tile.display()
+            if not self.robot:
+                tile.display()
             # place the tile on the board
             placed = self.place(tile)
             if placed is None:
-                print 'Tile cannot placed there.'
+                if not self.robot:
+                    print 'Tile cannot placed there.'
 
         # add a meeple
         meeple = player.get_meeple()
@@ -90,5 +108,5 @@ class Game:
                 return meeple
 
 if __name__ == '__main__':
-    g = Game(['Amelia', 'Dan'])
+    g = Game([HEURISTICS, HEURISTICS], robot=True)
     g.play()

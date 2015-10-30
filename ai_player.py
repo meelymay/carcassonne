@@ -1,6 +1,7 @@
 from player import *
 from coordinate import *
 from section import *
+import json
 
 
 TER_KEY = 'ter key'
@@ -77,8 +78,8 @@ class TerritoryValue:
         fit *= heuristics[OPENS_HEU][self.opens]
         fit *= heuristics[OWNER_HEU][self.owner]
         fit *= heuristics[TYPE_HEU][self.type]
-        print '\t%s' % (self.t)
-        print '\topens: %s\towner: %s\t type %s' % (self.opens, self.owner, self.type)
+        # print '\t%s' % (self.t)
+        # print '\topens: %s\towner: %s\t type %s' % (self.opens, self.owner, self.type)
 
         return fit
 
@@ -332,8 +333,8 @@ class AIPlayer(Player):
             self.rotations = rotation
             if rotation:
                 self.tile.rotate()
-            print '\nExploring placements for:'
-            self.tile.display()
+            # print '\nExploring placements for:'
+            # self.tile.display()
             min_x, max_x, min_y, max_y = board.get_bounds()
             for x in range(min_x-1, max_x+2):
                 if found:
@@ -341,19 +342,19 @@ class AIPlayer(Player):
                 for y in range(min_y-1, max_y+2):
                     c = Coordinate(x, y)
                     if board.can_place(self.tile, c):
-                        print 'Trying Coordinate', c
+                        # print 'Trying Coordinate', c
                         # TODO iter through all sections (just for debug)
                         for sec in [section.N, section.S, section.E, section.W, '']:
-                            print '...with meeple', sec
+                            # print '...with meeple', sec
                         # section.ALL_SECTIONS + ['']:
                             p = Play(rotation, c, sec)
                             possibilities[p] = self.get_fit2(c, sec)
-                            print '\tplay %s fit = %s' % (p, possibilities[p])
+                            # print '\tplay %s fit = %s' % (p, possibilities[p])
                         # found = True
                         # break
 
         play = max(possibilities, key=lambda x: possibilities[x])
-        print 'SELECTED play', play, 'with score', possibilities[play]
+        # print 'SELECTED play', play, 'with score', possibilities[play]
         self.rotations = play.rotations
         self.coordinate = play.coordinate
         self.meeple_section = play.section
